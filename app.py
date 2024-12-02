@@ -9,7 +9,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 
 # Enable CORS for your frontend domain
-CORS(app, origins=["https://presentation-builder-b3ld.onrender.com", "http://localhost:5000"])
+CORS(app, origins=["https://presentation-builder-b3ld.onrender.com"])
 
 
 
@@ -113,20 +113,24 @@ def create_slides_from_content(slide_content):
 
 @app.route('/generate', methods=['POST'])
 def generate_pptx():
-    """API endpoint to generate a PowerPoint presentation and return it for download."""
     try:
-        # Get the payload from the request
+        print("Request received for /generate")
         data = request.json
+        print("Request data:", data)
         if not data or "text" not in data:
             return jsonify({"error": "Missing 'text' field in request payload"}), 400
 
         # Fetch slide content from the external API
         slide_content = query_api({"user_id": "12345", "in-0": data["text"]})
+        print("Slide content:", slide_content)
+
         if isinstance(slide_content, dict) and "error" in slide_content:
             return jsonify(slide_content), 500
 
         # Create the PowerPoint presentation
         result = create_slides_from_content(slide_content)
+        print("Created PPTX:", result)
+
         if "error" in result:
             return jsonify(result), 500
 
@@ -134,6 +138,7 @@ def generate_pptx():
         return send_file(result["file_path"], as_attachment=True, download_name="presentation.pptx")
 
     except Exception as e:
+        print("Error occurred:", e)
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
