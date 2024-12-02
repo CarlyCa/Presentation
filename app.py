@@ -9,7 +9,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 
 # Enable CORS for your frontend domain
-CORS(app, origins=["https://presentation-builder-b3ld.onrender.com"])  # Replace with your frontend's domain
+CORS(app, origins=["https://presentation-builder-b3ld.onrender.com", "http://localhost:5000"])
 
 
 
