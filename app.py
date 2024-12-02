@@ -3,9 +3,15 @@ import json
 import os
 from pptx import Presentation
 import requests
+from flask_cors import CORS 
 
 # Flask app
 app = Flask(__name__)
+
+# Enable CORS for your frontend domain
+CORS(app, origins=["https://presentation-builder-b3ld.onrender.com"])  # Replace with your frontend's domain
+
+
 
 # Constants
 API_URL = "https://api.stack-ai.com/inference/v0/run/ac522f2a-ccb2-4608-8bab-3e1ccf74af42/6744a3cc842d4ea48dda5ddf"
