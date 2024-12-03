@@ -33,7 +33,6 @@ def home():
     return render_template("index.html")
 
 def query_api(payload):
-    """Fetch slide content from API."""
     response = requests.post(API_URL, headers=HEADERS, json=payload)
     if response.status_code != 200:
         return {"error": f"API request failed with status code {response.status_code}"}
@@ -45,7 +44,12 @@ def query_api(payload):
             if raw_out1.startswith("```json") and raw_out1.endswith("```"):
                 raw_out1 = raw_out1[7:-3]
             slides = json.loads(raw_out1)
-            return slides.get("slides", [])
+            if isinstance(slides, list):
+                return slides  # Return the list directly
+            elif isinstance(slides, dict):
+                return slides.get("slides", [])
+            else:
+                return {"error": "Unexpected structure in 'slides'"}
         else:
             return {"error": "'out-1' key not found in the API response."}
     except (json.JSONDecodeError, KeyError) as e:
