@@ -117,53 +117,56 @@
         document.getElementById("generateButton").addEventListener("click", async () => {
             const text = document.getElementById("inputText").value.trim();
             const messageElement = document.getElementById("message");
-   
             if (!text) {
                 messageElement.textContent = "Please enter some text!";
                 messageElement.className = "message error";
                 return;
             }
-   
+
             try {
+                console.log("Sending request to backend...");
                 messageElement.textContent = "Generating your presentation...";
                 messageElement.className = "message";
-   
-                const response = await fetch("https://presentation-builder-b3ld.onrender.com/generate", { // Update URL to the live endpoint
+
+                const response = await fetch("https://your-render-url.onrender.com/generate", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({ text }),
                 });
-   
+
+                console.log("Response received:", response);
+
                 if (response.ok) {
                     const blob = await response.blob();
                     const url = window.URL.createObjectURL(blob);
-   
-                    // Create a temporary anchor element to trigger the download
+
                     const a = document.createElement("a");
                     a.style.display = "none";
                     a.href = url;
                     a.download = "presentation.pptx";
                     document.body.appendChild(a);
                     a.click();
-   
-                    // Clean up
+
                     window.URL.revokeObjectURL(url);
                     document.body.removeChild(a);
-   
+
                     messageElement.textContent = "Presentation downloaded successfully!";
                     messageElement.className = "message success";
                 } else {
                     const error = await response.json();
+                    console.error("Error response:", error);
                     messageElement.textContent = `Error: ${error.error}`;
                     messageElement.className = "message error";
                 }
             } catch (error) {
+                console.error("Fetch error:", error);
                 messageElement.textContent = `Error: ${error.message}`;
                 messageElement.className = "message error";
             }
         });
+
     </script>
    
 </body>
