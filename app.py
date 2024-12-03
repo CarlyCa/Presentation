@@ -8,7 +8,12 @@ from flask_cors import CORS
 # Flask app
 app = Flask(__name__)
 
-CORS(app)
+# Enable CORS for all routes and origins
+CORS(app, resources={r"/*": {"origins": "*"}}, 
+     supports_credentials=True,
+     allow_headers=["Content-Type", "Authorization"],
+     methods=["GET", "POST", "OPTIONS"])
+
 
 # Constants
 API_URL = "https://api.stack-ai.com/inference/v0/run/ac522f2a-ccb2-4608-8bab-3e1ccf74af42/6744a3cc842d4ea48dda5ddf"
@@ -84,7 +89,13 @@ def create_slides_from_content(slide_content):
     return {"success": True, "file_path": output_path}
 
 @app.route('/generate', methods=['POST'])
-def generate_pptx():
+def generate_pptx():   
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+        return response
     try:
         data = request.json
         if not data or "text" not in data:
